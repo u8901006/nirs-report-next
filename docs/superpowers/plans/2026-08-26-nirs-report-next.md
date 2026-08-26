@@ -170,7 +170,7 @@ Commit with `feat: add channel quality and configurable ROI metrics`.
 - Produces: `LateralityResult`, `LateralityDirection`, `calculate_li(left, right, threshold=0.10)`, and `bootstrap_li(left_blocks, right_blocks, repetitions=5000, seed=20260826)`.
 - Consumes: finite left/right ROI metrics produced by Task 2.
 
-- [ ] **Step 1: Write failing LI point-estimate tests**
+- [x] **Step 1: Write failing LI point-estimate tests**
 
 ```python
 @pytest.mark.parametrize(("left", "right", "expected"), [(3, 1, 0.5), (1, 3, -0.5), (2, 2, 0.0)])
@@ -188,19 +188,19 @@ def test_li_with_opposite_signs_has_no_direction_classification():
     assert "W_LI_OPPOSITE_SIGNS" in result.warnings
 ```
 
-- [ ] **Step 2: Verify RED, implement the minimal LI function, verify GREEN**
+- [x] **Step 2: Verify RED, implement the minimal LI function, verify GREEN**
 
 Run the single test module before and after implementation.
 
-- [ ] **Step 3: Write failing deterministic bootstrap tests**
+- [x] **Step 3: Write failing deterministic bootstrap tests**
 
 Assert that the same seed returns identical CI bounds and that resampling paired blocks preserves equal sample length.
 
-- [ ] **Step 4: Implement paired block/subject bootstrap**
+- [x] **Step 4: Implement paired block/subject bootstrap**
 
 Resample indices, compute the mean left/right metrics for each replicate, discard only invalid denominators, and return percentile 2.5/97.5 bounds plus valid replicate count.
 
-- [ ] **Step 5: Run full tests and commit**
+- [x] **Step 5: Run full tests and commit**
 
 Commit with `feat: add robust laterality index analysis`.
 

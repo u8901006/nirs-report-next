@@ -12,3 +12,18 @@ __all__ = [
     "median_filter",
     "positive_integral",
 ]
+from .laterality import (
+    BootstrapLiResult,
+    LateralityDirection,
+    LateralityResult,
+    bootstrap_li,
+    calculate_li,
+)
+
+__all__ = [
+    "BootstrapLiResult",
+    "LateralityDirection",
+    "LateralityResult",
+    "bootstrap_li",
+    "calculate_li",
+]
