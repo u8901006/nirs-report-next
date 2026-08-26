@@ -1,0 +1,103 @@
+from __future__ import annotations
+
+import os
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
+from PyQt5 import QtWidgets
+from test_visualization import make_view_model
+
+from nirs_report_app.paths import AppPaths
+from nirs_report_app.ui.channel_grid import ChannelGrid
+from nirs_report_app.ui.main_window import MainWindow
+from nirs_report_app.ui.report_preview import ReportPreview
+from nirs_report_app.ui.workers import StudyAnalysisWorker
+
+_APPLICATION = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+_APPLICATION.setQuitOnLastWindowClosed(False)
+
+
+def application() -> QtWidgets.QApplication:
+    return _APPLICATION
+
+
+def test_main_window_has_advanced_navigation_and_safe_initial_state(tmp_path) -> None:
+    app = application()
+    window = MainWindow(AppPaths(tmp_path))
+    app.processEvents()
+
+    assert window.minimumWidth() >= 1280
+    assert window.minimumHeight() >= 800
+    assert [window.result_tabs.tabText(index) for index in range(window.result_tabs.count())] == [
+        "總覽",
+        "側化 LI",
+        "前後測",
+        "腦區差異",
+        "報告預覽",
+    ]
+    assert window.analysis_mode.count() == 2
+    assert window.channel_grid.status_label.text() == "有效 15/15 通道"
+    assert not window.export_button.isEnabled()
+    window.close()
+
+
+def test_channel_grid_retains_missing_positions_and_controls_li_availability() -> None:
+    application()
+    grid = ChannelGrid()
+    original_position = grid.channel_button(4).property("montage_position")
+
+    grid.set_channel_state(4, "missing")
+    assert grid.channel_button(4).property("montage_position") == original_position
+    assert "缺少" in grid.channel_button(4).text()
+    assert grid.roi_count("right_pfc") == (3, 4)
+
+    grid.set_selected_channels({1, 2, 3, 5, 6, 7})
+    assert grid.roi_count("anterior_frontal") == (3, 7)
+    assert not grid.li_available
+    grid.set_selected_channels({1, 2, 3, 12})
+    assert grid.li_available
+
+
+def test_report_preview_keeps_mandatory_pages_and_zoom_contract() -> None:
+    application()
+    preview = ReportPreview()
+    model = make_view_model()
+    preview.set_view_model(model)
+
+    assert preview.page_names() == ["總覽", "側化 LI", "品質控管", "方法與聲明"]
+    assert preview.is_page_mandatory("品質控管")
+    assert preview.is_page_mandatory("方法與聲明")
+    assert preview.zoom.minimum() == 60
+    assert preview.zoom.maximum() == 200
+    assert not preview.export_selected_button.isEnabled()
+    preview.page_list.setCurrentRow(0)
+    assert preview.export_selected_button.isEnabled()
+
+
+def test_study_worker_cancels_between_files_without_finalizing_report(tmp_path) -> None:
+    application()
+    processed: list[str] = []
+    destination = tmp_path / "report.docx"
+
+    def analyze(item: str) -> str:
+        processed.append(item)
+        return item.upper()
+
+    def finalize(results: list[str], path) -> None:
+        path.write_text("\n".join(results), encoding="utf-8")
+
+    worker = StudyAnalysisWorker(
+        ["first", "second", "third"],
+        analyze,
+        destination=destination,
+        finalize=finalize,
+    )
+    worker.progress.connect(lambda completed, total: worker.cancel() if completed == 1 else None)
+    cancelled: list[bool] = []
+    worker.cancelled.connect(lambda: cancelled.append(True))
+
+    worker.run()
+
+    assert processed == ["first"]
+    assert cancelled == [True]
+    assert not destination.exists()

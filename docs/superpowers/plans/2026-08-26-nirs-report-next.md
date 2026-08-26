@@ -376,35 +376,35 @@ Commit with `feat: add advanced Word research reports`.
 - Produces: data/settings/results/report-preview workflow, channel selection, five result tabs, background study worker, and export actions.
 - Consumes: service and renderer APIs only; UI does not perform numerical calculations.
 
-- [ ] **Step 1: Write a failing offscreen UI smoke test**
+- [x] **Step 1: Write a failing offscreen UI smoke test**
 
 With `QT_QPA_PLATFORM=offscreen`, instantiate `MainWindow` and assert the five named result tabs, analysis-mode selector, channel-grid status, and disabled export before analysis.
 
-- [ ] **Step 2: Verify RED, implement the navigation shell, verify GREEN**
+- [x] **Step 2: Verify RED, implement the navigation shell, verify GREEN**
 
 Keep controls usable at 1280×800 and do not remove inherited file/time settings.
 
-- [ ] **Step 3: Write failing channel-grid interaction tests**
+- [x] **Step 3: Write failing channel-grid interaction tests**
 
 Assert that missing channels retain montage positions, selected channels update ROI counts, and an invalid LI pair disables LI execution.
 
-- [ ] **Step 4: Verify RED, implement channel-grid/status interactions, verify GREEN**
+- [x] **Step 4: Verify RED, implement channel-grid/status interactions, verify GREEN**
 
 Use text/icons plus colors for every state.
 
-- [ ] **Step 5: Write failing report-preview tests**
+- [x] **Step 5: Write failing report-preview tests**
 
 Assert optional pages, mandatory quality/method pages, zoom range 60%–200%, and selected-page export state.
 
-- [ ] **Step 6: Verify RED, implement result tabs and report preview, verify GREEN**
+- [x] **Step 6: Verify RED, implement result tabs and report preview, verify GREEN**
 
 Use renderer outputs; do not recalculate result values in widgets.
 
-- [ ] **Step 7: Write and implement worker cancellation tests**
+- [x] **Step 7: Write and implement worker cancellation tests**
 
 Verify batch analysis signals progress, can be cancelled between files, and does not leave a partial destination report.
 
-- [ ] **Step 8: Run offscreen UI and full suites; commit**
+- [x] **Step 8: Run offscreen UI and full suites; commit**
 
 Commit with `feat: add advanced analysis and report preview UI`.
 
