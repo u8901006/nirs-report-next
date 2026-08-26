@@ -304,31 +304,31 @@ Reject mismatched metric/plot coordinates and accept absent optional analysis pa
 - Produces: `ReportDashboardRenderer`, `render_overview()`, `render_laterality()`, `render_prepost()`, `render_regional()`, and `export_result_bundle()`.
 - Consumes: `ReportViewModel`; produces Matplotlib figures/PNG and XLSX/CSV/JSON files.
 
-- [ ] **Step 1: Write failing overview-renderer tests**
+- [x] **Step 1: Write failing overview-renderer tests**
 
 Render a fixed 15-channel view model and assert observable figure contracts: three region headers, 15 channel axes, two ROI cards, one plot-map axis, and marker coordinates matching the model.
 
-- [ ] **Step 2: Verify RED, implement the A4 landscape overview, verify GREEN**
+- [x] **Step 2: Verify RED, implement the A4 landscape overview, verify GREEN**
 
 Use HbO `#D6455D`, HbR `#148FBD`, fixed montage positions, shared axes by default, and explicit missing-channel panels.
 
-- [ ] **Step 3: Write failing advanced-page renderer tests**
+- [x] **Step 3: Write failing advanced-page renderer tests**
 
 Assert that LI, pre/post, and regional renderers label their primary estimate and include required warning text when results are invalid.
 
-- [ ] **Step 4: Verify RED, implement advanced renderers, verify GREEN**
+- [x] **Step 4: Verify RED, implement advanced renderers, verify GREEN**
 
 All renderers accept explicit dimensions/DPI and do not recompute statistics.
 
-- [ ] **Step 5: Write failing export-bundle tests**
+- [x] **Step 5: Write failing export-bundle tests**
 
 Assert exact output names, numeric columns remaining numeric/NA, config seed preservation, SHA-256 provenance, and 300-DPI PNG dimensions.
 
-- [ ] **Step 6: Verify RED, implement XLSX/CSV/JSON/PNG bundle export, verify GREEN**
+- [x] **Step 6: Verify RED, implement XLSX/CSV/JSON/PNG bundle export, verify GREEN**
 
 Write to a temporary sibling directory and rename only after all outputs succeed.
 
-- [ ] **Step 7: Run full tests and commit**
+- [x] **Step 7: Run full tests and commit**
 
 Commit with `feat: render report dashboard and export analysis data`.
 
