@@ -342,23 +342,23 @@ Commit with `feat: render report dashboard and export analysis data`.
 - Produces: `build_advanced_report(destination, settings, patient, view_model, rendered_pages)`.
 - Consumes: validated report model and 300-DPI dashboard images.
 
-- [ ] **Step 1: Write a failing DOCX structure test**
+- [x] **Step 1: Write a failing DOCX structure test**
 
 Open the generated DOCX with `python-docx` and assert native report title, patient table, quality/warning text, required research-only statement, overview image, and method/provenance table.
 
-- [ ] **Step 2: Verify RED, implement hybrid DOCX report, verify GREEN**
+- [x] **Step 2: Verify RED, implement hybrid DOCX report, verify GREEN**
 
 Use native Word text/tables for selectable content and inserted PNGs for chart layout. Optional LI/pre/post/regional sections appear only when corresponding results exist.
 
-- [ ] **Step 3: Write a failing consistency test**
+- [x] **Step 3: Write a failing consistency test**
 
 Assert that displayed Integral/Centroid/Slope/LI values match the same `ReportViewModel` used by CSV export.
 
-- [ ] **Step 4: Implement consistency formatting and verify GREEN**
+- [x] **Step 4: Implement consistency formatting and verify GREEN**
 
 Use blank/NA for numeric missing values and Traditional Chinese `無法計算` only in narrative cells.
 
-- [ ] **Step 5: Run reporting and full suites; commit**
+- [x] **Step 5: Run reporting and full suites; commit**
 
 Commit with `feat: add advanced Word research reports`.
 
