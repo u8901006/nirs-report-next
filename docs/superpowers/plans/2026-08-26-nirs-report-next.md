@@ -103,7 +103,7 @@ Run `python -m pytest -q`, then commit with `chore: establish nirs-report-next b
 - Produces: `ChannelState`, `QualityStatus`, `ChannelAssessment`, `RoiDefinition`, `RoiSignal`, `MetricSummary`, `assess_channel()`, `aggregate_roi()`, `baseline_corrected_mean()`, and `recovery_slope()`.
 - Consumes: pandas channel frames and NumPy time series from the existing loader.
 
-- [ ] **Step 1: Write failing channel-quality tests**
+- [x] **Step 1: Write failing channel-quality tests**
 
 Add literal fixtures proving:
 
@@ -121,20 +121,20 @@ def test_roi_without_valid_channels_is_invalid_and_nan():
     assert np.isnan(result.values).all()
 ```
 
-- [ ] **Step 2: Run quality tests and verify RED**
+- [x] **Step 2: Run quality tests and verify RED**
 
 Run `python -m pytest tests/test_quality.py -q`.
 Expected: import failure for the missing quality API.
 
-- [ ] **Step 3: Implement immutable quality and ROI models**
+- [x] **Step 3: Implement immutable quality and ROI models**
 
 Create enums/dataclasses and row-wise ROI aggregation. A time point with less than 50% valid selected channels becomes `NaN`; an empty ROI returns an all-NaN array and `E_ROI_EMPTY`, never zeros.
 
-- [ ] **Step 4: Run quality tests and verify GREEN**
+- [x] **Step 4: Run quality tests and verify GREEN**
 
 Run `python -m pytest tests/test_quality.py -q` and then the full suite.
 
-- [ ] **Step 5: Write failing metric tests**
+- [x] **Step 5: Write failing metric tests**
 
 Use hand-derived expectations:
 
@@ -147,15 +147,15 @@ def test_recovery_slope_uses_seconds():
     assert recovery_slope(np.array([3.0, 2.0, 1.0]), np.array([0.0, 0.5, 1.0])) == -2.0
 ```
 
-- [ ] **Step 6: Run metric tests and verify RED**
+- [x] **Step 6: Run metric tests and verify RED**
 
 Run `python -m pytest tests/test_metrics.py -q`.
 
-- [ ] **Step 7: Implement metrics and split built-in ROIs**
+- [x] **Step 7: Implement metrics and split built-in ROIs**
 
 Implement metric functions and change `compute_region_signals` to expose Right PFC, Anterior Frontal, Left PFC, and derived Lateral Frontal while preserving `front_hbo`, `front_hbr`, `side_hbo`, and `side_hbr` compatibility properties.
 
-- [ ] **Step 8: Run metric, feature, and full tests; commit**
+- [x] **Step 8: Run metric, feature, and full tests; commit**
 
 Commit with `feat: add channel quality and configurable ROI metrics`.
 
