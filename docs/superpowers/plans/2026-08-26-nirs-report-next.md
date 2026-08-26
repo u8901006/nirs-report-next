@@ -272,23 +272,23 @@ Commit with `feat: add study dataset and inferential statistics`.
 - Produces: `SingleAnalysisRequest`, `StudyAnalysisRequest`, `StudyAnalysisResult`, `ReportViewModel`, `NirsAnalysisService.analyze_single()`, and `NirsAnalysisService.analyze_study()`.
 - Consumes: loader, quality, metrics, laterality, pre/post, regional, and statistics modules.
 
-- [ ] **Step 1: Write a failing single-analysis service test**
+- [x] **Step 1: Write a failing single-analysis service test**
 
 Use a real temporary workbook with one missing PFC channel. Assert Right/Anterior/Left/Lateral ROI summaries, degraded status, LI values, and compatibility feature output.
 
-- [ ] **Step 2: Verify RED, implement single orchestration, verify GREEN**
+- [x] **Step 2: Verify RED, implement single orchestration, verify GREEN**
 
 The existing `analyze()` method delegates to `analyze_single()` and preserves its public result contract.
 
-- [ ] **Step 3: Write a failing multi-file study service test**
+- [x] **Step 3: Write a failing multi-file study service test**
 
 Use four small workbooks (two subjects × pre/post), a manifest, and literal expected paired deltas. Assert subject-level rows and exclusion/warning propagation.
 
-- [ ] **Step 4: Verify RED, implement study orchestration, verify GREEN**
+- [x] **Step 4: Verify RED, implement study orchestration, verify GREEN**
 
 Do not import PyQt5 in services or analysis modules.
 
-- [ ] **Step 5: Write and implement ReportViewModel validation tests**
+- [x] **Step 5: Write and implement ReportViewModel validation tests**
 
 Reject mismatched metric/plot coordinates and accept absent optional analysis pages. Commit with `feat: orchestrate advanced analyses through report models`.
 
