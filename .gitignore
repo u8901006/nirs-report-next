@@ -1,0 +1,42 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+.ruff_cache/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Local reverse-engineering artifacts and downloaded tools.
+tools/
+recovered-raw/
+recovered-fragments/
+recovered-pylingual/
+
+# Keep the sanitized case contract/evidence, but never the sample or extraction.
+work/**
+!work/start-exe-reconstruction/
+work/start-exe-reconstruction/**
+!work/start-exe-reconstruction/scope.md
+!work/start-exe-reconstruction/timeline.md
+!work/start-exe-reconstruction/evidence/
+!work/start-exe-reconstruction/evidence/*.md
+!work/start-exe-reconstruction/report/
+!work/start-exe-reconstruction/report/handoff.md
+!work/start-exe-reconstruction/report/case-review.md
+
+# Runtime-generated output and user settings.
+settings.ini
+Report_settings.ini
+/report/
+img/alldatafig.png
+img/avgdatafig.png
+img/front_avgdatafig.png
+img/side_avgdatafig.png
+img/axisdatafig.png
+
+# Advanced analysis exports and local research data.
+/exports/
+*.xlsx~
+*.docx~

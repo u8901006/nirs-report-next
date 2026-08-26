@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nirs-report-next"
+version = "2.0.0"
+description = "Advanced fNIRS analysis and research reporting desktop application"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = { text = "Proprietary - repository owner must choose a publication license" }
+dependencies = [
+  "matplotlib>=3.7,<4",
+  "numpy>=1.24,<3",
+  "openpyxl>=3.1,<4",
+  "pandas>=1.5,<3",
+  "Pillow>=9,<13",
+  "PyQt5>=5.15,<6",
+  "python-docx>=0.8.11,<2",
+  "scipy>=1.10,<2",
+  "statsmodels>=0.14,<1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9", "ruff>=0.12"]
+build = ["pyinstaller>=6,<7"]
+
+[project.gui-scripts]
+nirs-report = "nirs_report_app.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nirs_report_app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--basetemp=.pytest_tmp"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
