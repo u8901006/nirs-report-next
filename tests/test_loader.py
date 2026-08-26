@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import gc
+import warnings
 
 from nirs_report_app.analysis.loader import load_nirs_workbook
 
@@ -30,3 +32,20 @@ def test_loads_legacy_hbo_hbr_workbook(tmp_path) -> None:
     loaded = load_nirs_workbook(path)
     assert loaded.legacy_format
     assert np.isclose(loaded.sample_rate, 2.0)
+
+
+def test_loader_closes_excel_file_handle(tmp_path) -> None:
+    path = tmp_path / "closed.xlsx"
+    frame = pd.DataFrame({"Time": [0.0, 0.5], "ch1": [1.0, 2.0]})
+    with pd.ExcelWriter(path) as writer:
+        frame.to_excel(writer, sheet_name="HbO", index=False)
+        frame.to_excel(writer, sheet_name="HbR", index=False)
+
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always", ResourceWarning)
+        loaded = load_nirs_workbook(path)
+        del loaded
+        gc.collect()
+
+    resource_warnings = [item for item in captured if item.category is ResourceWarning]
+    assert resource_warnings == []

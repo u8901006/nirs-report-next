@@ -28,9 +28,10 @@ def _sample_rate(time_seconds: np.ndarray) -> float:
 
 
 def load_nirs_workbook(path: Path, distance_mm: float = 30.0) -> LoadedNirsData:
-    workbook = pd.ExcelFile(path)
+    with pd.ExcelFile(path) as workbook:
+        sheet_names = tuple(workbook.sheet_names)
     filtered_sheet = next(
-        (name for name in ("Filtered ΔHb", "Padded ΔHb") if name in workbook.sheet_names),
+        (name for name in ("Filtered ΔHb", "Padded ΔHb") if name in sheet_names),
         None,
     )
     if filtered_sheet:
@@ -51,7 +52,7 @@ def load_nirs_workbook(path: Path, distance_mm: float = 30.0) -> LoadedNirsData:
         )
         return LoadedNirsData(hbo, hbr, time_seconds, _sample_rate(time_seconds), False)
 
-    if {"HbO", "HbR"}.issubset(workbook.sheet_names):
+    if {"HbO", "HbR"}.issubset(sheet_names):
         try:
             hbo = pd.read_excel(path, sheet_name="HbO", header=2)
             hbr = pd.read_excel(path, sheet_name="HbR", header=2)

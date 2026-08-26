@@ -220,43 +220,43 @@ Commit with `feat: add robust laterality index analysis`.
 - Produces: `StudyRecord`, `load_manifest()`, `validate_manifest()`, `pair_pre_post()`, `paired_test()`, `welch_test()`, `one_sample_test()`, `adjust_pvalues()`, `fit_mixed_model()`, `PrePostResult`, and `RegionalComparisonResult`.
 - Consumes: subject-level ROI metric rows; never raw frames.
 
-- [ ] **Step 1: Write failing manifest-validation tests**
+- [x] **Step 1: Write failing manifest-validation tests**
 
 Test required columns, duplicate `(subject_id, session, condition)` keys, relative paths, and readable-file validation with literal temporary manifests.
 
-- [ ] **Step 2: Verify RED, implement manifest models/validation, verify GREEN**
+- [x] **Step 2: Verify RED, implement manifest models/validation, verify GREEN**
 
 Keep row numbers and actionable error messages in validation results.
 
-- [ ] **Step 3: Write failing pairing tests**
+- [x] **Step 3: Write failing pairing tests**
 
 Prove that complete subjects produce `post - pre`, incomplete subjects appear in exclusions, and no missing value is filled with zero.
 
-- [ ] **Step 4: Verify RED, implement pairing, verify GREEN**
+- [x] **Step 4: Verify RED, implement pairing, verify GREEN**
 
 The returned object contains paired rows, total subjects, paired N, and exclusions.
 
-- [ ] **Step 5: Write failing statistical tests**
+- [x] **Step 5: Write failing statistical tests**
 
 Use small hand-calculated fixtures for paired difference, one-sample LI, Holm correction, and Benjamini–Hochberg correction. Assert estimates, sample sizes, and adjusted p-value ordering rather than implementation details.
 
-- [ ] **Step 6: Verify RED, implement SciPy tests/effect sizes/corrections, verify GREEN**
+- [x] **Step 6: Verify RED, implement SciPy tests/effect sizes/corrections, verify GREEN**
 
 Return a common `StatisticalResult` with estimate, standard error, CI, statistic, p-value, adjusted p-value, effect size, included/excluded N, method, warnings, and provenance.
 
-- [ ] **Step 7: Write failing mixed-model behavior tests**
+- [x] **Step 7: Write failing mixed-model behavior tests**
 
 Create a deterministic repeated-measures fixture where the intervention group increases only at post; assert a positive `group:time` coefficient, subject count, and converged status.
 
-- [ ] **Step 8: Verify RED, implement statsmodels MixedLM wrapper, verify GREEN**
+- [x] **Step 8: Verify RED, implement statsmodels MixedLM wrapper, verify GREEN**
 
 Do not silently switch models. Return `W_MODEL_CONVERGENCE` with no interpretation when fitting fails.
 
-- [ ] **Step 9: Implement and test regional contrasts**
+- [x] **Step 9: Implement and test regional contrasts**
 
 Build all requested ROI pairs, apply one correction family, retain every contrast, and reject comparisons that treat `lateral_frontal` as independent of its left/right components.
 
-- [ ] **Step 10: Run the full suite and commit**
+- [x] **Step 10: Run the full suite and commit**
 
 Commit with `feat: add study dataset and inferential statistics`.
 
