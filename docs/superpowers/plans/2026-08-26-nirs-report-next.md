@@ -460,15 +460,15 @@ Commit with `release: prepare nirs-report-next 2.0.0`.
 - Produces: `https://github.com/u8901006/nirs-report-next` with `main` branch.
 - Consumes: verified local Git repository.
 
-- [ ] **Step 1: Verify repository cleanliness and identity**
+- [x] **Step 1: Verify repository cleanliness and identity**
 
 Run full tests again, `git status --short`, `git remote -v`, and scan tracked files for secrets, source patient data, `.venv`, build outputs, and temporary HEIC/PNG conversions.
 
-- [ ] **Step 2: Confirm target repository availability**
+- [x] **Step 2: Confirm target repository availability**
 
 Use authenticated GitHub CLI/API to confirm `u8901006/nirs-report-next` does not already exist. If it exists, stop before overwriting or changing its visibility.
 
-- [ ] **Step 3: Create the public repository**
+- [x] **Step 3: Create the public repository**
 
 Run:
 
@@ -476,10 +476,10 @@ Run:
 gh repo create u8901006/nirs-report-next --public --source . --remote origin --push
 ```
 
-- [ ] **Step 4: Verify the remote repository**
+- [x] **Step 4: Verify the remote repository**
 
 Confirm repository visibility is `PUBLIC`, default branch is `main`, remote HEAD matches the local release commit, README renders, and both SPEC files are present.
 
-- [ ] **Step 5: Record final release information**
+- [x] **Step 5: Record final release information**
 
 Report the public URL, commit SHA, test count, build artifact path, and any explicitly deferred items.
