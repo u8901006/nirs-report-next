@@ -1,6 +1,7 @@
+import warnings
+
 import pandas as pd
 import pytest
-import warnings
 
 from nirs_report_app.analysis.regional import compare_regions
 

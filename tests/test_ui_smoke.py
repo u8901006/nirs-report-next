@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import os
+from types import SimpleNamespace
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+import pandas as pd
 from PyQt5 import QtWidgets
 from test_visualization import make_view_model
 
@@ -101,3 +103,38 @@ def test_study_worker_cancels_between_files_without_finalizing_report(tmp_path) 
     assert processed == ["first"]
     assert cancelled == [True]
     assert not destination.exists()
+
+
+def test_main_window_routes_study_mode_to_manifest_service(tmp_path, monkeypatch) -> None:
+    app = application()
+    window = MainWindow(AppPaths(tmp_path))
+    manifest = tmp_path / "study.csv"
+    manifest.write_text("subject_id,file_path,session\n", encoding="utf-8")
+    captured = []
+
+    class FakeService:
+        def analyze_study(self, request):
+            captured.append(request)
+            return SimpleNamespace(
+                single_results={("S01", "pre", "task"): object()},
+                pairing=None,
+                regional=None,
+                errors=(),
+                subject_level_results=pd.DataFrame(),
+            )
+
+    monkeypatch.setattr("nirs_report_app.ui.main_window.build_report_view_model", lambda result, **kwargs: make_view_model())
+    monkeypatch.setattr(QtWidgets.QMessageBox, "warning", lambda *args: None)
+    window.service = FakeService()
+    window.analysis_mode.setCurrentIndex(1)
+    window.file_edit.setText(str(manifest))
+    window.task_start.setValue(1.0)
+    window.task_end.setValue(2.0)
+    window.measure_end.setValue(3.0)
+
+    window._analyze()
+    app.processEvents()
+
+    assert captured[0].manifest_path == manifest
+    assert window.export_button.isEnabled()
+    window.close()

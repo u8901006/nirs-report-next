@@ -1,6 +1,7 @@
+import warnings
+
 import numpy as np
 import pandas as pd
-import warnings
 
 from nirs_report_app.statistics import (
     adjust_pvalues,

@@ -14,8 +14,8 @@ from .analysis.metrics import baseline_corrected_mean, recovery_slope
 from .analysis.models import BUILTIN_ROIS, RoiSignal
 from .analysis.prepost import PairingResult, pair_pre_post
 from .analysis.quality import aggregate_roi
-from .analysis.regions import RegionSignals, compute_region_signals
 from .analysis.regional import RegionalComparisonResult, compare_regions
+from .analysis.regions import RegionSignals, compute_region_signals
 from .dataset import ManifestIssue, load_manifest
 from .report_models import ChannelSeries, PlotPoint, ReportViewModel, RoiSummary
 
@@ -27,7 +27,7 @@ class AnalysisResult:
     features: FeatureResult
     roi_signals_hbo: dict[str, RoiSignal] = field(default_factory=dict)
     roi_signals_hbr: dict[str, RoiSignal] = field(default_factory=dict)
-    roi_metrics: dict[str, "RoiMetricSummary"] = field(default_factory=dict)
+    roi_metrics: dict[str, RoiMetricSummary] = field(default_factory=dict)
     laterality: LateralityResult | None = None
     warnings: tuple[str, ...] = ()
 
@@ -141,8 +141,8 @@ def build_report_view_model(
 class NirsAnalysisService:
     @staticmethod
     def _slice(start: float, end: float, sample_rate: float, length: int) -> slice:
-        first = int(round(start * sample_rate))
-        last = int(round(end * sample_rate))
+        first = round(start * sample_rate)
+        last = round(end * sample_rate)
         if first < 0 or last > length or first >= last:
             raise ValueError(f"E_WINDOW_OUT_OF_RANGE: {start}–{end} seconds")
         return slice(first, last)
@@ -304,7 +304,7 @@ class NirsAnalysisService:
                         distance_mm=request.distance_mm,
                     )
                 )
-            except Exception as error:  # file boundary records and continues batch processing
+            except Exception as error:  # noqa: BLE001 - file boundary records and continues
                 errors.append(
                     ManifestIssue(row_number, "E_ANALYSIS_FILE", f"{record.file_path}: {error}")
                 )

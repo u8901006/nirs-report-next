@@ -85,6 +85,7 @@ value = positive_integral(signal, dt=0.1)
 
 ## 文件
 
+- [使用指南](docs/user-guide.md)
 - [架構與擴充方式](docs/architecture.md)
 - [逆向工程報告](docs/2026-08-25_逆向工程-start-exe-report.md)
 - [進階分析 SPEC](docs/specs/nirs-report-modular-fNIRS-advanced-analysis-SPEC-v1.md)

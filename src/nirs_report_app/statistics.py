@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
 import warnings
+from dataclasses import dataclass, replace
 
 import numpy as np
 import pandas as pd
@@ -24,7 +24,7 @@ class StatisticalResult:
     method: str
     warnings: tuple[str, ...] = ()
 
-    def with_adjusted_p(self, value: float) -> "StatisticalResult":
+    def with_adjusted_p(self, value: float) -> StatisticalResult:
         return replace(self, adjusted_p_value=float(value))
 
 
@@ -232,7 +232,7 @@ def fit_mixed_model(
             if (not fitted.converged or captured)
             else (),
         )
-    except Exception as error:  # statsmodels exposes several fit-specific exception types
+    except Exception as error:  # noqa: BLE001 - statsmodels exposes fit-specific exceptions
         return MixedModelResult(
             {},
             {},

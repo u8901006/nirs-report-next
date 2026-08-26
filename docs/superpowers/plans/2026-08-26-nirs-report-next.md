@@ -422,15 +422,15 @@ Commit with `feat: add advanced analysis and report preview UI`.
 - Produces: reproducible Windows executable build and documented user workflow.
 - Consumes: all completed application modules.
 
-- [ ] **Step 1: Add PyInstaller specification**
+- [x] **Step 1: Add PyInstaller specification**
 
 Bundle PyQt5, Matplotlib data, Word dependencies, version metadata, and application assets. Output name is `NIRS-Report-Next.exe`.
 
-- [ ] **Step 2: Update CI and documentation**
+- [x] **Step 2: Update CI and documentation**
 
 CI runs Python 3.11 and 3.12 tests plus Ruff. The user guide covers single/study modes, manifest columns, channel warnings, LI/pre-post/regional interpretation, report export, and non-diagnostic limitation.
 
-- [ ] **Step 3: Run complete verification**
+- [x] **Step 3: Run complete verification**
 
 Run:
 
@@ -443,11 +443,11 @@ python -m PyInstaller --clean nirs-report-next.spec
 
 Expected: zero test failures, zero Ruff errors, wheel/sdist created, and `dist/NIRS-Report-Next.exe` exists.
 
-- [ ] **Step 4: Run executable smoke test**
+- [x] **Step 4: Run executable smoke test**
 
 Launch the EXE with a dedicated `--smoke-test` option that initializes paths and core imports without opening an interactive window, then exits 0.
 
-- [ ] **Step 5: Commit the release candidate**
+- [x] **Step 5: Commit the release candidate**
 
 Commit with `release: prepare nirs-report-next 2.0.0`.
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
 
@@ -14,6 +15,7 @@ from ..services import (
     AnalysisResult,
     NirsAnalysisService,
     SingleAnalysisRequest,
+    StudyAnalysisRequest,
     build_report_view_model,
 )
 from ..settings import AnalysisSettings, ReportSettings, load_settings, save_settings
@@ -31,6 +33,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.report_settings = load_settings(paths.report_settings, ReportSettings)
         self.service = NirsAnalysisService()
         self.result: AnalysisResult | None = None
+        self.study_result = None
         self.view_model: ReportViewModel | None = None
         self._setup_ui()
         self._load_settings_into_ui()
@@ -126,25 +129,66 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _analyze(self) -> None:
         try:
-            self.result = self.service.analyze_single(
-                SingleAnalysisRequest(
-                    path=Path(self.file_edit.text()),
-                    task_start=self.task_start.value(),
-                    task_end=self.task_end.value(),
-                    measure_end=self.measure_end.value(),
-                    baseline_end=self.task_start.value(),
-                    filter_size=self.filter_size.value(),
-                    excluded_channels=tuple(
-                        channel
-                        for channel in range(1, 16)
-                        if channel not in self.channel_grid.selected_channels
-                    ),
+            if self.analysis_mode.currentIndex() == 1:
+                self.study_result = self.service.analyze_study(
+                    StudyAnalysisRequest(
+                        manifest_path=Path(self.file_edit.text()),
+                        task_start=self.task_start.value(),
+                        task_end=self.task_end.value(),
+                        measure_end=self.measure_end.value(),
+                        baseline_end=self.task_start.value(),
+                        filter_size=self.filter_size.value(),
+                    )
                 )
-            )
+                if not self.study_result.single_results:
+                    details = " · ".join(
+                        f"{issue.code}: {issue.message}" for issue in self.study_result.errors
+                    )
+                    raise ValueError(details or "研究資料集沒有可分析的檔案")
+                self.result = next(iter(self.study_result.single_results.values()))
+            else:
+                self.study_result = None
+                self.result = self.service.analyze_single(
+                    SingleAnalysisRequest(
+                        path=Path(self.file_edit.text()),
+                        task_start=self.task_start.value(),
+                        task_end=self.task_end.value(),
+                        measure_end=self.measure_end.value(),
+                        baseline_end=self.task_start.value(),
+                        filter_size=self.filter_size.value(),
+                        excluded_channels=tuple(
+                            channel
+                            for channel in range(1, 16)
+                            if channel not in self.channel_grid.selected_channels
+                        ),
+                    )
+                )
         except Exception as error:  # noqa: BLE001 - Qt boundary converts errors to a dialog
             QtWidgets.QMessageBox.warning(self, "分析失敗", str(error))
             return
         self.view_model = build_report_view_model(self.result, title="NIRS 分析報告")
+        if self.study_result is not None:
+            pairing = self.study_result.pairing
+            if pairing is not None and pairing.paired_n == 0:
+                pairing = None
+            regional = self.study_result.regional
+            if regional is not None and not regional.contrasts:
+                regional = None
+            pair_exclusions = (
+                self.study_result.pairing.exclusions
+                if self.study_result.pairing is not None
+                else ()
+            )
+            self.view_model = replace(
+                self.view_model,
+                prepost_result=pairing,
+                regional_result=regional,
+                exclusions=tuple(self.study_result.errors) + tuple(pair_exclusions),
+                metadata={
+                    **self.view_model.metadata,
+                    "study_file_count": len(self.study_result.single_results),
+                },
+            )
         for channel, series in self.view_model.channel_series.items():
             self.channel_grid.set_channel_state(channel, series.state)
         self.result_tabs.set_view_model(self.view_model)
@@ -202,7 +246,15 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         bundle = Path(destination) / f"NIRS-{datetime.now().astimezone():%Y%m%d-%H%M%S}"
         try:
-            export_result_bundle(bundle, self.view_model)
+            export_result_bundle(
+                bundle,
+                self.view_model,
+                subject_level_results=(
+                    self.study_result.subject_level_results
+                    if self.study_result is not None
+                    else None
+                ),
+            )
         except Exception as error:  # noqa: BLE001 - Qt boundary converts errors to a dialog
             QtWidgets.QMessageBox.warning(self, "匯出失敗", str(error))
             return

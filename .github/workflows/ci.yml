@@ -16,5 +16,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e ".[dev]"
-      - run: python -m ruff check src tests
+      - run: python -m ruff check .
       - run: python -m pytest -q
+      - run: python -m nirs_report_app --smoke-test
+      - if: matrix.python-version == '3.12'
+        run: python -m pip install build && python -m build
