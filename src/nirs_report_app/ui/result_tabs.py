@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from ..report_models import ReportViewModel
 from ..visualization import ReportDashboardRenderer
@@ -14,7 +14,8 @@ class FigureResultPage(QtWidgets.QWidget):
         super().__init__(parent)
         self.layout = QtWidgets.QVBoxLayout(self)
         self.empty_label = QtWidgets.QLabel(empty_text)
-        self.empty_label.setStyleSheet("color: #667085; font-size: 16px;")
+        self.empty_label.setObjectName("emptyState")
+        self.empty_label.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(self.empty_label)
         self.canvas: FigureCanvasQTAgg | None = None
 
@@ -47,7 +48,9 @@ class ResultTabs(QtWidgets.QTabWidget):
             self.addTab(widget, name)
 
     def set_view_model(self, model: ReportViewModel) -> None:
-        renderer = ReportDashboardRenderer(width_inches=9.0, height_inches=5.5, dpi=100)
+        renderer = ReportDashboardRenderer(
+            width_inches=9.0, height_inches=5.5, dpi=100, show_title=False
+        )
         self.overview.set_figure(
             renderer.render_overview(model, width_inches=9.0, height_inches=5.5, dpi=100)
         )

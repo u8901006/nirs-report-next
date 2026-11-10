@@ -11,7 +11,7 @@ from test_visualization import make_view_model
 
 from nirs_report_app.paths import AppPaths
 from nirs_report_app.ui.channel_grid import ChannelGrid
-from nirs_report_app.ui.main_window import MainWindow
+from nirs_report_app.ui.main_window import MainWindow, guess_measurement_date
 from nirs_report_app.ui.report_preview import ReportPreview
 from nirs_report_app.ui.workers import StudyAnalysisWorker
 
@@ -123,7 +123,10 @@ def test_main_window_routes_study_mode_to_manifest_service(tmp_path, monkeypatch
                 subject_level_results=pd.DataFrame(),
             )
 
-    monkeypatch.setattr("nirs_report_app.ui.main_window.build_report_view_model", lambda result, **kwargs: make_view_model())
+    monkeypatch.setattr(
+        "nirs_report_app.ui.main_window.build_report_view_model",
+        lambda result, **kwargs: make_view_model(),
+    )
     monkeypatch.setattr(QtWidgets.QMessageBox, "warning", lambda *args: None)
     window.service = FakeService()
     window.analysis_mode.setCurrentIndex(1)
@@ -138,3 +141,69 @@ def test_main_window_routes_study_mode_to_manifest_service(tmp_path, monkeypatch
     assert captured[0].manifest_path == manifest
     assert window.export_button.isEnabled()
     window.close()
+
+
+def test_switched_off_channel_says_excluded_and_can_be_restored() -> None:
+    application()
+    grid = ChannelGrid()
+    button = grid.channel_button(7)
+    assert "有效" in button.text()
+
+    button.click()
+    assert "排除" in button.text()
+    assert "有效" not in button.text()
+    assert grid.status_label.text() == "有效 14/15 通道"
+
+    button.click()
+    assert "有效" in button.text()
+
+
+def test_measurement_date_is_read_from_the_export_file_name(tmp_path) -> None:
+    from datetime import date
+
+    assert guess_measurement_date(tmp_path / "250808_0845_rTMS.xlsx") == date(2025, 8, 8)
+    assert guess_measurement_date(tmp_path / "study.csv") is None
+    assert guess_measurement_date(tmp_path / "259999_x.xlsx") is None
+
+
+def test_patient_fields_reach_the_report_and_date_follows_the_file(tmp_path) -> None:
+    from datetime import date
+
+    app = application()
+    window = MainWindow(AppPaths(tmp_path))
+    window.file_edit.setText(str(tmp_path / "250808_0845_rTMS.xlsx"))
+    window.patient_id.setText(" S01 ")
+    window.patient_name.setText("測試個案")
+    window.gender.setCurrentText("女")
+    window.doctor.setText("王醫師")
+    window.opinion.setPlainText("活化反應偏低")
+    app.processEvents()
+
+    patient = window._patient_info()
+    assert patient.patient_id == "S01"
+    assert patient.name == "測試個案"
+    assert patient.gender == "女"
+    assert patient.measurement_date == date(2025, 8, 8)
+    assert patient.doctor == "王醫師"
+    assert patient.opinion == "活化反應偏低"
+    assert window.analyze_button.property("primary") is True
+    assert window.report_button.property("primary") is False
+    window.close()
+
+
+def test_report_preview_shows_a_real_page_and_reports_ticked_figures() -> None:
+    from PyQt5 import QtCore
+
+    application()
+    preview = ReportPreview()
+    preview.set_view_model(make_view_model())
+    assert preview.checked_figure_keys() == {"overview", "laterality"}
+
+    preview.page_list.setCurrentRow(0)
+    width = preview.preview_label.pixmap().width()
+    assert width > 500
+    preview.zoom.setValue(200)
+    assert preview.preview_label.pixmap().width() > width
+
+    preview.page_list.item(1).setCheckState(QtCore.Qt.Unchecked)
+    assert preview.checked_figure_keys() == {"overview"}
