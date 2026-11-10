@@ -19,6 +19,7 @@ from docx.shared import Mm, Pt, RGBColor
 from PIL import Image
 
 from .analysis.features import FeatureResult
+from .messages import DIRECTION_TEXT, describe_warning, describe_warnings, roi_label
 from .report_models import ReportViewModel
 from .settings import ReportSettings
 
@@ -115,27 +116,6 @@ DISCLAIMER = (
     "本報告僅供研究與教育用途，不得作為單獨臨床診斷依據。"
 )
 
-WARNING_TEXT = {
-    "W_CHANNEL_MISSING": "有通道缺少資料",
-    "W_CHANNEL_PARTIAL": "有通道只有部分資料有效",
-    "W_CHANNEL_INVALID": "有通道資料無效",
-    "W_ROI_DEGRADED": "區域內有效通道不足",
-    "E_ROI_EMPTY": "區域內沒有有效通道",
-    "W_LI_DENOMINATOR_SMALL": "左右訊號總和太小，LI 不穩定",
-    "W_LI_OPPOSITE_SIGNS": "左右訊號方向相反，LI 需保守解讀",
-    "E_LI_NONFINITE": "左右訊號含無效數值，無法計算 LI",
-    "E_PAIR_INCOMPLETE": "缺少前測或後測，無法配對",
-    "E_INSUFFICIENT_SAMPLE": "樣本數不足",
-    "W_ZERO_VARIANCE": "數值沒有變異",
-    "W_MODEL_CONVERGENCE": "統計模型未收斂",
-}
-
-DIRECTION_TEXT = {
-    "left-dominant": "左側優勢",
-    "right-dominant": "右側優勢",
-    "bilateral": "雙側均衡",
-}
-
 CONFIG_LABELS = {
     "sample_rate": "取樣頻率 (Hz)",
     "task_start": "作業開始 (秒)",
@@ -153,16 +133,6 @@ def _format_numeric(value: float | None, decimals: int) -> str:
     if value is None:
         return "—"
     return f"{value:.{decimals}f}"
-
-
-def describe_warning(code: str) -> str:
-    """Return a readable sentence for a warning code, keeping the code for traceability."""
-    text = WARNING_TEXT.get(code)
-    return f"{text}（{code}）" if text else code
-
-
-def _describe_warnings(codes: tuple[str, ...]) -> str:
-    return "；".join(describe_warning(code) for code in codes)
 
 
 def _set_style_font(
@@ -458,12 +428,12 @@ def build_advanced_report(
         ),
         [
             (
-                summary.display_name,
+                roi_label(summary.roi_id, summary.display_name),
                 _format_numeric(summary.integral, 2),
                 _format_numeric(summary.centroid, 2),
                 _format_numeric(summary.slope, 4),
                 f"{summary.valid_channels} / {summary.expected_channels}",
-                _describe_warnings(summary.warnings),
+                describe_warnings(summary.warnings),
             )
             for summary in view_model.roi_summaries
         ],
@@ -489,7 +459,7 @@ def build_advanced_report(
                     _format_numeric(result.right, 3),
                     _format_numeric(result.value, 3),
                     f"{direction}（切點 ±{result.threshold:.2f}）",
-                    _describe_warnings(result.warnings),
+                    describe_warnings(result.warnings),
                 )
             ],
             widths=(Mm(42), Mm(42), Mm(28), Mm(60), CONTENT_WIDTH - Mm(172)),
@@ -498,7 +468,7 @@ def build_advanced_report(
         )
 
     document.add_heading("品質控管", level=1)
-    document.add_paragraph(_describe_warnings(view_model.quality_summary) or "未記錄品質警告")
+    document.add_paragraph(describe_warnings(view_model.quality_summary) or "未記錄品質警告")
     for exclusion in view_model.exclusions:
         document.add_paragraph(_describe_exclusion(exclusion), style="List Bullet")
 

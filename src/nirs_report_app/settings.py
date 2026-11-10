@@ -19,6 +19,7 @@ class AnalysisSettings:
     isOpenReport: bool = False
     filter_num: int = 0
     last_open_dir: str = ""
+    last_doctor: str = ""
 
 
 @dataclass(slots=True)
