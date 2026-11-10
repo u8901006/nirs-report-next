@@ -222,7 +222,7 @@ class MainWindow(QtWidgets.QMainWindow):
             render_jobs["regional"] = renderer.render_regional(self.view_model)
         for name, figure in render_jobs.items():
             image_path = self.paths.images / f"report-{name}.png"
-            figure.savefig(image_path, dpi=300)
+            figure.savefig(image_path, dpi=300, facecolor="white")
             plt.close(figure)
             pages[name] = image_path
         build_advanced_report(
